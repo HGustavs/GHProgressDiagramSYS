@@ -27,7 +27,7 @@ define("DATA_FOLDER","OSSPaper2019/");
 * ----------===========--------------
 *
 */
-$process="ALL"; // ALL, ISSUES, GIT, BLAME
+$process="ALL"; // ALL, ISSUES, GIT, BLAME, FIX, STUDENTS
 $dbFile="GHdata.db";
 $newGitCommitFile="data_commits.js";
 $newIssueFile="data_issues.js";
@@ -470,48 +470,47 @@ if($process==="ALL"||$process==="BLAME"){
 <?php 
 	
 //$log_db = new PDO('sqlite:'.$dbFile);
+if($process==="ALL"||$process==="FIX"){
 
-// Fix database. Any user names that have been changed are reverted to last known login name
+  // Fix database. Any user names that have been changed are reverted to last known login name
 
-echo "<tr><td>Diamond Reo</td></tr>";
-	
-$fixfile=file_get_contents("fix_git_names.txt");
-	
-$items=explode("\n",$fixfile);	
-foreach($items as $item){
-		$cont=explode(",",$item);
-		$fromname=$cont[0];
-		$toname=$cont[1];
-		echo "<tr>";
-		echo "<td>".$fromname."</td><td>".$toname."</td>";
+  echo "<tr><td>Diamond Reo</td></tr>";
+    
+  $fixfile=file_get_contents("fix_git_names.txt");
+    
+  $items=explode("\n",$fixfile);	
+  foreach($items as $item){
+      $cont=explode(",",$item);
+      $fromname=$cont[0];
+      $toname=$cont[1];
+      echo "<tr>";
+      echo "<td>".$fromname."</td><td>".$toname."</td>";
 
-	
-		$query = $log_db->prepare('UPDATE commitgit set author="'.$toname.'" where author="'.$fromname.'"');
-		$query->execute();
-	 	echo "<td>".$query->rowCount()."</td>";
+    
+      $query = $log_db->prepare('UPDATE commitgit set author="'.$toname.'" where author="'.$fromname.'"');
+      $query->execute();
+      echo "<td>".$query->rowCount()."</td>";
 
-		$query = $log_db->prepare('UPDATE commitdata set author="'.$toname.'" where author="'.$fromname.'"');
-		$query->execute();
-	 	echo "<td>".$query->rowCount()."</td>";
+      $query = $log_db->prepare('UPDATE commitdata set author="'.$toname.'" where author="'.$fromname.'"');
+      $query->execute();
+      echo "<td>".$query->rowCount()."</td>";
 
-		$query = $log_db->prepare('UPDATE event set author="'.$toname.'" where author="'.$fromname.'"');
-		$query->execute();
-	 	echo "<td>".$query->rowCount()."</td>";
-  
-    /*
-		$query = $log_db->prepare('UPDATE comment set author="'.$toname.'" where author="'.$fromname.'"');
-		$query->execute();	
-	 	echo "<td>".$query->rowCount()."</td>";
-    */
+      $query = $log_db->prepare('UPDATE event set author="'.$toname.'" where author="'.$fromname.'"');
+      $query->execute();
+      echo "<td>".$query->rowCount()."</td>";
+    
+      $query = $log_db->prepare('UPDATE CodeRow set blameuser="'.$toname.'" where blameuser="'.$fromname.'"');
+      $query->execute();	
+      echo "<td>".$query->rowCount()."</td>";
 
-		$query = $log_db->prepare('UPDATE issue set author="'.$toname.'" where author="'.$fromname.'"');
-		$query->execute();
-	 	echo "<td>".$query->rowCount()."</td>";
-	
-		echo "</tr>";	
-		
-}	
-
+      $query = $log_db->prepare('UPDATE issue set author="'.$toname.'" where author="'.$fromname.'"');
+      $query->execute();
+      echo "<td>".$query->rowCount()."</td>";
+    
+      echo "</tr>";	
+      
+  }	
+}
 ?> 
 </table>
 
@@ -519,68 +518,70 @@ foreach($items as $item){
 <?php 
 
 //$log_db = new PDO('sqlite:'.$dbFile);
+if($process==="ALL"||$process==="STUDENTS"){
 
-$query = $log_db->prepare('INSERT INTO stud(fornamn, efternamn, sex, anmkod, program, termin, ar, kurskod, kursnamn, poang, grupp, rol, roletime, author) VALUES ("UNK","UNK","O","","","","","","","","","","","unknown")');
-$query->execute();
+  $query = $log_db->prepare('INSERT INTO stud(fornamn, efternamn, sex, anmkod, program, termin, ar, kurskod, kursnamn, poang, grupp, rol, roletime, author) VALUES ("UNK","UNK","O","","","","","","","","","","","unknown")');
+  $query->execute();
 
-$query = $log_db->prepare('INSERT INTO stud(fornamn, efternamn, sex, anmkod, program, termin, ar, kurskod, kursnamn, poang, grupp, rol, roletime, author) VALUES ("Henrik","Gustavsson","T","","","","","","","","","","","HGustavs")');
-$query->execute();
+  $query = $log_db->prepare('INSERT INTO stud(fornamn, efternamn, sex, anmkod, program, termin, ar, kurskod, kursnamn, poang, grupp, rol, roletime, author) VALUES ("Henrik","Gustavsson","T","","","","","","","","","","","HGustavs")');
+  $query->execute();
 
-$query = $log_db->prepare('INSERT INTO stud(fornamn, efternamn, sex, anmkod, program, termin, ar, kurskod, kursnamn, poang, grupp, rol, roletime, author) VALUES ("Alexander","Kratsch","T","","","","","","","","","","","klump")');
-$query->execute();
+  $query = $log_db->prepare('INSERT INTO stud(fornamn, efternamn, sex, anmkod, program, termin, ar, kurskod, kursnamn, poang, grupp, rol, roletime, author) VALUES ("Alexander","Kratsch","T","","","","","","","","","","","klump")');
+  $query->execute();
 
-$query = $log_db->prepare('INSERT INTO stud(fornamn, efternamn, sex, anmkod, program, termin, ar, kurskod, kursnamn, poang, grupp, rol, roletime, author) VALUES ("Marcus","Brohede","T","","","","","","","","","","","a97marbr")');
-$query->execute();
+  $query = $log_db->prepare('INSERT INTO stud(fornamn, efternamn, sex, anmkod, program, termin, ar, kurskod, kursnamn, poang, grupp, rol, roletime, author) VALUES ("Marcus","Brohede","T","","","","","","","","","","","a97marbr")');
+  $query->execute();
 
-$query = $log_db->prepare('INSERT INTO stud(fornamn, efternamn, sex, anmkod, program, termin, ar, kurskod, kursnamn, poang, grupp, rol, roletime, author) VALUES ("Andras","Marki","T","","","","","","","","","","","andras-marki")');
-$query->execute();
+  $query = $log_db->prepare('INSERT INTO stud(fornamn, efternamn, sex, anmkod, program, termin, ar, kurskod, kursnamn, poang, grupp, rol, roletime, author) VALUES ("Andras","Marki","T","","","","","","","","","","","andras-marki")');
+  $query->execute();
 
-$handle = fopen("rumpak.csv", "r");
-if ($handle) {
-    while (($line = fgets($handle)) !== false) {
- 				$items=explode (",",$line);
-        $eftername=substr($items[1],1);
-        $fornamn=substr($items[2],0,-1);
-        $anmkod=$items[4];
-        $sex=$items[3];
-        $program=substr($items[6],1,5);
-        $termin=substr($items[7],0,4);
-        $ar=$items[9];
-        $kurskod=$items[10];
-        $kursnamn=$items[11];
-        $poang=$items[13];
-        $grupp=$items[14];
-        $roll=$items[18];
-        $rolltime=$items[19];
-        $author=$items[20];
-				$query = $log_db->prepare('INSERT INTO stud(fornamn, efternamn, sex, anmkod, program, termin, ar, kurskod, kursnamn, poang, grupp, rol, roletime, author) VALUES (:fornamn, :efternamn, :sex, :anmkod, :program, :termin,:ar,:kurskod,:kursnamn,:poang,:grupp,:rol,:roletime,:author)');
-				$query->bindParam(':efternamn', $eftername);
-				$query->bindParam(':fornamn', $fornamn);
-				$query->bindParam(':anmkod', $anmkod);
-				$query->bindParam(':sex', $sex);
-				$query->bindParam(':program', $program);
-				$query->bindParam(':termin', $termin);
-				$query->bindParam(':ar', $ar);
-				$query->bindParam(':kurskod', $kurskod);
-				$query->bindParam(':kursnamn', $kursnamn);
-				$query->bindParam(':poang', $poang);
-				$query->bindParam(':grupp', $grupp);
-				$query->bindParam(':rol', $roll);
-				$query->bindParam(':roletime', $rolltime);
-				$query->bindParam(':author', $author);
+  $handle = fopen("rumpak.csv", "r");
+  if ($handle) {
+      while (($line = fgets($handle)) !== false) {
+          $items=explode (",",$line);
+          $eftername=substr($items[1],1);
+          $fornamn=substr($items[2],0,-1);
+          $anmkod=$items[4];
+          $sex=$items[3];
+          $program=substr($items[6],1,5);
+          $termin=substr($items[7],0,4);
+          $ar=$items[9];
+          $kurskod=$items[10];
+          $kursnamn=$items[11];
+          $poang=$items[13];
+          $grupp=$items[14];
+          $roll=$items[18];
+          $rolltime=$items[19];
+          $author=$items[20];
+          $query = $log_db->prepare('INSERT INTO stud(fornamn, efternamn, sex, anmkod, program, termin, ar, kurskod, kursnamn, poang, grupp, rol, roletime, author) VALUES (:fornamn, :efternamn, :sex, :anmkod, :program, :termin,:ar,:kurskod,:kursnamn,:poang,:grupp,:rol,:roletime,:author)');
+          $query->bindParam(':efternamn', $eftername);
+          $query->bindParam(':fornamn', $fornamn);
+          $query->bindParam(':anmkod', $anmkod);
+          $query->bindParam(':sex', $sex);
+          $query->bindParam(':program', $program);
+          $query->bindParam(':termin', $termin);
+          $query->bindParam(':ar', $ar);
+          $query->bindParam(':kurskod', $kurskod);
+          $query->bindParam(':kursnamn', $kursnamn);
+          $query->bindParam(':poang', $poang);
+          $query->bindParam(':grupp', $grupp);
+          $query->bindParam(':rol', $roll);
+          $query->bindParam(':roletime', $rolltime);
+          $query->bindParam(':author', $author);
 
 
-				$query->execute();
-    }
+          $query->execute();
+      }
 
-    fclose($handle);
+      fclose($handle);
 
-		$query = $log_db->prepare('INSERT INTO stud(fornamn, efternamn, sex, anmkod, program, termin, ar, kurskod, kursnamn, poang, grupp, rol, roletime, author) VALUES ("Henrik","Gustavsson","T","","","","","","","","","","","HGustavs")');
-		$query->execute();
+      $query = $log_db->prepare('INSERT INTO stud(fornamn, efternamn, sex, anmkod, program, termin, ar, kurskod, kursnamn, poang, grupp, rol, roletime, author) VALUES ("Henrik","Gustavsson","T","","","","","","","","","","","HGustavs")');
+      $query->execute();
 
-} else {
-    // error opening the file.
-} 
+  } else {
+      // error opening the file.
+  } 
+}
 
 ?>
 <script>alert("Database has been generated!");</script>
