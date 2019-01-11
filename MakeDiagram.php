@@ -429,11 +429,11 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 								$do=4;			// Day offset for 2016 == Friday e.g. 4
 								$clipst="url(#daClip3)";
 						}else if($row['thetimed']>=1095&&$row['thetimed']<1460){
-								$yk=$topoffs+2*$graphSpacer+$graphHeight-$bottoffs;
+								$yk=$topoffs+3*$graphSpacer+$graphHeight-$bottoffs;
 								$do=4;			// Day offset for 2017 == Friday e.g. 4
 								$clipst="url(#daClip4)";							
 						}else{
-								$yk=$topoffs+3*$graphSpacer+$graphHeight-$bottoffs;
+								$yk=$topoffs+4*$graphSpacer+$graphHeight-$bottoffs;
 								$do=-7;			// Day offset for 2017 == Friday e.g. 4
 								$clipst="url(#daClip5)";
 						}
@@ -453,12 +453,16 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 								if($row['p1id']!="UNK"){
 										$parent=$rowarr[$row['p1id']];
 										$pxk=($parent['thetimed']%365)-$startday;
-										$svgstr.="<line x1='".($xk+(($xxk-$do)*$xmult)+1)."' y1='".($yk-($row['space']*$ymult))."' x2='".(($xk)+(($pxk-$do)*$xmult)+1)."' y2='".($yk-($parent['space']*$ymult))."' stroke-width='1.5' stroke='".$strokecol."' clip-path='".$clipst."' />";
+										//$svgstr.="<line x1='".($xk+(($xxk-$do)*$xmult)+1)."' y1='".($yk-($row['space']*$ymult))."' x2='".(($xk)+(($pxk-$do)*$xmult)+1)."' y2='".($yk-($parent['space']*$ymult))."' stroke-width='1.5' stroke='".$strokecol."' clip-path='".$clipst."' />";
+										$svgstr.="<line x1='".($xk+(($xxk-$do)*$xmult)+1)."' y1='".($yk-($row['space']*$ymult))."' x2='".(($xk)+(($pxk-$do)*$xmult)+1)."' y2='".($yk-($parent['space']*$ymult))."' stroke-width='1.5' stroke='".$strokecol."' />";
+
 								}
 								if($row['p2id']!="UNK"){
 										$descendant=$rowarr[$row['p2id']];
 										$dxk=($descendant['thetimed']%365)-$startday;
-										$svgstr.="<line x1='".($xk+(($xxk-$do)*$xmult)+1)."' y1='".($yk-($row['space']*$ymult))."' x2='".($xk+(($dxk-$do)*$xmult)+1)."' y2='".($yk-($descendant['space']*$ymult))."' stroke-width='1.5' stroke='".$strokecol."' clip-path='".$clipst."' />";												
+										//$svgstr.="<line x1='".($xk+(($xxk-$do)*$xmult)+1)."' y1='".($yk-($row['space']*$ymult))."' x2='".($xk+(($dxk-$do)*$xmult)+1)."' y2='".($yk-($descendant['space']*$ymult))."' stroke-width='1.5' stroke='".$strokecol."' clip-path='".$clipst."' />";												
+										$svgstr.="<line x1='".($xk+(($xxk-$do)*$xmult)+1)."' y1='".($yk-($row['space']*$ymult))."' x2='".($xk+(($dxk-$do)*$xmult)+1)."' y2='".($yk-($descendant['space']*$ymult))."' stroke-width='1.5' stroke='".$strokecol."' />";												
+
 								}
 		
 								
