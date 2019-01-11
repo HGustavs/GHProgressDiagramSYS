@@ -5,7 +5,7 @@
 
 <body>
 <div>	
-<form action="charting_mb2.php" method="POST">
+<form action="MakeDiagram.php" method="POST">
 <?php 
 		// -------------------------------------------------------------------------------------------------------
 		// -----------------=============######## Real Time Tracing Library ########=============-----------------
@@ -176,10 +176,15 @@
 				}else{
 						echo "<option value='1'>Table</option>";
 				}
-		echo "</select>"
-?>
+		echo "</select>";
+
+		echo "<pre>";
+		print_r($_POST);
+		echo "</pre>";
+	?>
 </form>
 </div>
+
 
 <table>
 <?php 
