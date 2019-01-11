@@ -201,6 +201,9 @@ $yearsize="35";
 
 $arrowWidth="4";
 $arrowHeight="18";	
+	
+$log_db = new PDO('sqlite:../githubdata/OSSPaper2019/GHdata.db');
+date_default_timezone_set('Europe/Berlin' );
 
 //------------==========########### Main Functions ###########==========------------
 
@@ -383,7 +386,7 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 						}else{
 								$fillstd="fill:#efe";								
 						}
-						for ($j=0;$j<4;$j++){
+						for ($j=0;$j<5;$j++){
 							$svgstr.="<rect x='".(($i*7*$xmult)+110)."' y='".($topoffs+($j*$graphSpacer))."' width='".($xmult*7)."' height='".($graphHeight-26)."' style='".$fillstd."' />";						
 
 							// Clip Path!
@@ -406,6 +409,7 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 						// 2015 begins on thursdag  (0-1-2-3)
 						// 2016 begins on friday		(0-1-2-3-4)
 						// 2017 begins on sunday    (0)
+						// 2018 begins on monday		(0-1)
 
 						if($row['thetimed']<365){
 								$yk=$topoffs+$graphHeight-$bottoffs;
@@ -419,10 +423,14 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 								$yk=$topoffs+2*$graphSpacer+$graphHeight-$bottoffs;
 								$do=4;			// Day offset for 2016 == Friday e.g. 4
 								$clipst="url(#daClip3)";
+						}else if($row['thetimed']>=1095&&$row['thetimed']<1460){
+								$yk=$topoffs+2*$graphSpacer+$graphHeight-$bottoffs;
+								$do=4;			// Day offset for 2017 == Friday e.g. 4
+								$clipst="url(#daClip4)";							
 						}else{
 								$yk=$topoffs+3*$graphSpacer+$graphHeight-$bottoffs;
 								$do=-7;			// Day offset for 2017 == Friday e.g. 4
-								$clipst="url(#daClip4)";
+								$clipst="url(#daClip5)";
 						}
 
 /*
@@ -1053,9 +1061,6 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 				$svgstr.=postground($kind,$graphHeight,$graphWidth,$graphSpacer);	
 				makestart($svgstr);
 		}
-
-		$log_db = new PDO('sqlite:./GHdata.db');
-		date_default_timezone_set('Europe/Berlin' );
 		
 		go();
 	
