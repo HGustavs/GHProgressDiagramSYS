@@ -48,6 +48,11 @@ if(!file_exists(DATA_FOLDER)){
   chdir(DATA_FOLDER);
 }
 
+if(file_exists($dbFile)){
+  echo "The database file ".$dbFile." already exist! Please remove to regenerate the database.";
+  exit;
+}
+
 $log_db = new PDO('sqlite:'.$dbFile);
 $sql= 'CREATE TABLE IF NOT EXISTS commitgit(id INTEGER PRIMARY KEY,cid VARCHAR(40),p1id VARCHAR(40),p2id VARCHAR(40),author VARCHAR(32),authornme VARCHAR(32),thedate TIMESTAMP,p1start INTEGER,p1end INTEGER,p2start INTEGER,p2end INTEGER, space INTEGER, thetime TIMESTAMP, thetimed INTEGER, thetimeh INTEGER,message TEXT);';
 //$log_db->exec($sql);
@@ -578,7 +583,7 @@ if ($handle) {
 } 
 
 ?>
-
+<script>alert("Database has been generated!");</script>
 </table>
 </body>
 </html>
