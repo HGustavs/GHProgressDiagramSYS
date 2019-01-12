@@ -723,17 +723,47 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 
 				$dvpcolordd=$colordarr[$kind][4];
 				$webcolordd=$colordarr[$kind][5];
+			
+				$dvpcol="fill:#f88";
+				$webcol="fill:#88f";
+				$dvpcold="fill:#d44";
+				$webcold="fill:#44d";
 
+				$dvpcol="fill:#fff";
+				$webcol="fill:#ccc";
+			
 				$query='select sum(rowcnt) as loc,stud.author,stud.ar,stud.program from Blame,stud where Blame.courseyear=stud.ar and blame.blameuser=stud.author group by stud.author order by loc desc;';
-
 				$result = $log_db->query($query);
 				$rows = $result->fetchAll();
+
 				$i=0;
 				$yk=$topoffs-36;
 				$yk+=$graphSpacer;			
 				foreach($rows as $row){
 						// Do not reset iterator - color dependent on year
+						$cnt=$row['loc']/50;
+						if($cnt>98) $cnt=98;
+						$cnt+=14;
 
+						if($row['program']=="DVSUG"){
+								$fillst=$dvpcol;				
+								$fillstd=$dvpcold;				
+						}else if($row['program']=="WEBUG"){
+								$fillst=$webcol;				
+								$fillstd=$webcold;				
+						}			
+					
+						$svgstr.="<rect x='".($leftoffs+($i*8))."' y='".($yk-$cnt)."' width='8' height='".($cnt)."' style='".$fillst."' />";
+
+						$i++;
+				}
+
+				$i=0;
+				$yk=$topoffs-36;
+				$yk+=$graphSpacer;			
+				foreach($rows as $row){
+						// Do not reset iterator - color dependent on year
+					
 						$fillst=$colors[$row['ar']];				
 						$fillstd=$dcolors[$row['ar']];
 						
@@ -744,7 +774,7 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 						// stroke-width:3;stroke:rgb(0,0,0)
 						$svgstr.="<rect x='".($leftoffs+($i*8))."' y='".($yk-$cnt-2)."' width='10' height='".($cnt)."' style='".$fillstd."' />";
 						$svgstr.="<rect x='".($leftoffs+($i*8))."' y='".($yk-$cnt)."' width='8' height='".($cnt)."' style='".$fillst."' />";
-						
+					
 						// Iterate to next category
 						$i++;
 				}
