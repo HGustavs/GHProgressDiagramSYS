@@ -82,7 +82,7 @@
 			array("","","","","",""),
 			array("Early leader","Early issue","Early other","Late leader","Late issue","Late other"),
 			array("Early leader","Early issue","Early other","Late leader","Late issue","Late other"));
-		$year = array("2014","2015","2016","2017","ALL");
+		$year = array("2014","2015","2016","2017","2018","ALL");
 		$xaxis = array(
 			"Students ordered by rank",
 			"Students ordered by rank",
@@ -162,7 +162,11 @@
 				}else{
 						echo "<option value='10'>Itemized Line Diagram</option>";
 				}
-
+				if($_POST['diagram']==11){
+						echo "<option value='11' selected='selected'>Lines of Code Diagram</option>";
+				}else{
+						echo "<option value='11'>Lines of Code Diagram</option>";
+				}
 		echo "</select>";
 
 		echo "<select name='kind' onchange='this.form.submit()'>";
@@ -229,8 +233,10 @@ function go(){
 				diagram_commits($kind);
 		}else if($kind>=8&&$kind<9){
 				diagram_git($kind);
-		}else if($kind>=9){
+		}else if($kind>=9&&$kind<11){
 				diagram_itemized($kind);
+		}else if($kind>=11&&$kind<12){
+				diagram_loc($kind);
 		}
 }
 				
@@ -243,7 +249,7 @@ function go(){
 function makestart($svgstr)
 {
 		if(!$maketable){
-										echo "<svg width='800' height='920' style='border:1px solid red;'>";
+										echo "<svg width='800' height='1220' style='border:1px solid red;'>";
 										echo $svgstr;
 										echo "</svg>"; 
 		}else{
@@ -286,7 +292,7 @@ function background($kind,$graphHeight,$graphWidth,$graphSpacer)
 			}
 		}
 
-		for ($i=0;$i<5;$i++){
+		for ($i=0;$i<6;$i++){
 				// Year
 				$svgstr.="<rect x='10' y='".($topoffs+($i*$graphSpacer))."' width='".($graphWidth)."' height='".($graphHeight)."' style='fill:#eee' />";
 				$svgstr.="<text x='17' y='".($graphSpacer+($i*$graphSpacer))."' font-family='Arial Narrow' font-size='".$yearsize."' style='fill:#888' >".$year[$i]."</text>";
@@ -453,15 +459,20 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 								if($row['p1id']!="UNK"){
 										$parent=$rowarr[$row['p1id']];
 										$pxk=($parent['thetimed']%365)-$startday;
-										//$svgstr.="<line x1='".($xk+(($xxk-$do)*$xmult)+1)."' y1='".($yk-($row['space']*$ymult))."' x2='".(($xk)+(($pxk-$do)*$xmult)+1)."' y2='".($yk-($parent['space']*$ymult))."' stroke-width='1.5' stroke='".$strokecol."' clip-path='".$clipst."' />";
-										$svgstr.="<line x1='".($xk+(($xxk-$do)*$xmult)+1)."' y1='".($yk-($row['space']*$ymult))."' x2='".(($xk)+(($pxk-$do)*$xmult)+1)."' y2='".($yk-($parent['space']*$ymult))."' stroke-width='1.5' stroke='".$strokecol."' />";
+										$svgstr.="<line x1='".($xk+(($xxk-$do)*$xmult)+1)."' y1='".($yk-($row['space']*$ymult))."' x2='".(($xk)+(($pxk-$do)*$xmult)+1)."' y2='".($yk-($parent['space']*$ymult))."' stroke-width='1.5' stroke='".$strokecol."' clip-path='".$clipst."' />";
+										
+										// No clip version
+										//$svgstr.="<line x1='".($xk+(($xxk-$do)*$xmult)+1)."' y1='".($yk-($row['space']*$ymult))."' x2='".(($xk)+(($pxk-$do)*$xmult)+1)."' y2='".($yk-($parent['space']*$ymult))."' stroke-width='1.5' stroke='".$strokecol."' />";
 
 								}
 								if($row['p2id']!="UNK"){
 										$descendant=$rowarr[$row['p2id']];
 										$dxk=($descendant['thetimed']%365)-$startday;
-										//$svgstr.="<line x1='".($xk+(($xxk-$do)*$xmult)+1)."' y1='".($yk-($row['space']*$ymult))."' x2='".($xk+(($dxk-$do)*$xmult)+1)."' y2='".($yk-($descendant['space']*$ymult))."' stroke-width='1.5' stroke='".$strokecol."' clip-path='".$clipst."' />";												
-										$svgstr.="<line x1='".($xk+(($xxk-$do)*$xmult)+1)."' y1='".($yk-($row['space']*$ymult))."' x2='".($xk+(($dxk-$do)*$xmult)+1)."' y2='".($yk-($descendant['space']*$ymult))."' stroke-width='1.5' stroke='".$strokecol."' />";												
+										
+										$svgstr.="<line x1='".($xk+(($xxk-$do)*$xmult)+1)."' y1='".($yk-($row['space']*$ymult))."' x2='".($xk+(($dxk-$do)*$xmult)+1)."' y2='".($yk-($descendant['space']*$ymult))."' stroke-width='1.5' stroke='".$strokecol."' clip-path='".$clipst."' />";												
+										
+										// No Clip version
+										//$svgstr.="<line x1='".($xk+(($xxk-$do)*$xmult)+1)."' y1='".($yk-($row['space']*$ymult))."' x2='".($xk+(($dxk-$do)*$xmult)+1)."' y2='".($yk-($descendant['space']*$ymult))."' stroke-width='1.5' stroke='".$strokecol."' />";												
 
 								}
 		
@@ -662,7 +673,72 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 			
 		}
 		
-		
+		function diagram_loc($kind)
+		{
+				global $maketable;
+				global $log_db;
+				global $leftoffs;
+				global $topoffs;
+				global $bottoffs;
+				global $graphSpacer;
+				global $graphHeight;
+				global $graphWidth;
+				global $colorarr;
+				global $colordarr;
+				global $colorddarr;			
+
+				$svgstr=background($kind,$graphHeight,$graphWidth,$graphSpacer);
+
+				$kind=6;
+				$dvpcolor=$colorarr[$kind][1];
+				$webcolor=$colorarr[$kind][2];
+
+				$dvpcolord=$colordarr[$kind][4];
+				$webcolord=$colordarr[$kind][5];
+
+				$dvpcolordd=$colordarr[$kind][4];
+				$webcolordd=$colordarr[$kind][5];
+
+				$query='select sum(rowcnt) as loc,stud.author,stud.ar,stud.program from Blame,stud where Blame.courseyear=stud.ar and blame.blameuser=stud.author group by stud.author order by stud.ar,loc desc;';
+
+				$result = $log_db->query($query);
+				$rows = $result->fetchAll();
+				$prevrow="";
+				$i=0;
+				$yk=$topoffs-36;
+				foreach($rows as $row){
+						// Reset iterator
+						if($row['ar']!=$prevrow){
+								$i=0;
+								$yk+=$graphSpacer;
+						}
+
+						if($row['program']=="DVSUG"){
+								$fillst=$dvpcolor;				
+								$fillstd=$dvpcolord;				
+						}else if($row['program']=="WEBUG"){
+								$fillst=$webcolor;				
+								$fillstd=$webcolord;				
+						}			
+						
+						$cnt=$row['loc']/50;
+					
+						if($cnt>98) $cnt=98;
+						
+						// stroke-width:3;stroke:rgb(0,0,0)
+						$svgstr.="<rect x='".($leftoffs+($i*8))."' y='".($yk-$cnt-2)."' width='10' height='".($cnt)."' style='".$fillstd."' />";
+						$svgstr.="<rect x='".($leftoffs+($i*8))."' y='".($yk-$cnt)."' width='8' height='".($cnt)."' style='".$fillst."' />";
+						
+						// Iterate to next category
+						$i++;
+						$prevrow=$row['ar'];
+				}
+			
+				$svgstr.=postground($kind,$graphHeight,$graphWidth,$graphSpacer);
+
+				makestart($svgstr);
+		}
+	
 		function diagram_commits($kind)
 		{
 				global $maketable;
