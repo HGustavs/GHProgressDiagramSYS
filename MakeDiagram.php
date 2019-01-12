@@ -167,6 +167,11 @@
 				}else{
 						echo "<option value='11'>Lines of Code Diagram</option>";
 				}
+				if($_POST['diagram']==12){
+						echo "<option value='12' selected='selected'>Lines of Code P Year Diagram</option>";
+				}else{
+						echo "<option value='12'>Lines of Code P Year Diagram</option>";
+				}	
 		echo "</select>";
 
 		echo "<select name='kind' onchange='this.form.submit()'>";
@@ -237,6 +242,8 @@ function go(){
 				diagram_itemized($kind);
 		}else if($kind>=11&&$kind<12){
 				diagram_loc($kind);
+		}else if($kind>=12&&$kind<13){
+				diagram_locY($kind);
 		}
 }
 				
@@ -672,6 +679,80 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 				makestart($svgstr);
 			
 		}
+	
+		function diagram_locY($kind)
+		{
+				global $maketable;
+				global $log_db;
+				global $leftoffs;
+				global $topoffs;
+				global $bottoffs;
+				global $graphSpacer;
+				global $graphHeight;
+				global $graphWidth;
+				global $colorarr;
+				global $colordarr;
+				global $colorddarr;			
+			
+				$colors=array();
+				$dcolors=array();			
+				
+				$colors["2014"]="fill:#f8b";
+				$dcolors["2014"]="fill:#d59";			
+			
+				$colors["2015"]="fill:#59d";
+				$dcolors["2015"]="fill:#47b";			
+
+				$colors["2016"]="fill:#bfe";
+				$dcolors["2016"]="fill:#7fa";			
+			
+				$colors["2017"]="fill:#bfe";
+				$dcolors["2017"]="fill:#7fa";			
+
+				$colors["2018"]="fill:#bfe";
+				$dcolors["2018"]="fill:#7fa";			
+			
+				$svgstr=background($kind,$graphHeight,$graphWidth,$graphSpacer);
+
+				$kind=6;
+				$dvpcolor=$colorarr[$kind][1];
+				$webcolor=$colorarr[$kind][2];
+
+				$dvpcolord=$colordarr[$kind][4];
+				$webcolord=$colordarr[$kind][5];
+
+				$dvpcolordd=$colordarr[$kind][4];
+				$webcolordd=$colordarr[$kind][5];
+
+				$query='select sum(rowcnt) as loc,stud.author,stud.ar,stud.program from Blame,stud where Blame.courseyear=stud.ar and blame.blameuser=stud.author group by stud.author order by loc desc;';
+
+				$result = $log_db->query($query);
+				$rows = $result->fetchAll();
+				$i=0;
+				$yk=$topoffs-36;
+				$yk+=$graphSpacer;			
+				foreach($rows as $row){
+						// Do not reset iterator - color dependent on year
+
+						$fillst=$colors[$row['ar']];				
+						$fillstd=$dcolors[$row['ar']];
+						
+						$cnt=$row['loc']/50;
+					
+						if($cnt>98) $cnt=98;
+						
+						// stroke-width:3;stroke:rgb(0,0,0)
+						$svgstr.="<rect x='".($leftoffs+($i*8))."' y='".($yk-$cnt-2)."' width='10' height='".($cnt)."' style='".$fillstd."' />";
+						$svgstr.="<rect x='".($leftoffs+($i*8))."' y='".($yk-$cnt)."' width='8' height='".($cnt)."' style='".$fillst."' />";
+						
+						// Iterate to next category
+						$i++;
+				}
+			
+				$svgstr.=postground($kind,$graphHeight,$graphWidth,$graphSpacer);
+
+				makestart($svgstr);
+		}	
 		
 		function diagram_loc($kind)
 		{
