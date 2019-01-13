@@ -3,7 +3,18 @@
 		<title>PHP Test</title>
 		
 		<script>
-		
+				function download(filename, text) {
+					var element = document.createElement('a');
+					element.setAttribute('href', 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(text));
+					element.setAttribute('download', filename);
+
+					element.style.display = 'none';
+					document.body.appendChild(element);
+
+					element.click();
+
+					document.body.removeChild(element);
+				}			
 		</script>
 	</head>
 
@@ -757,7 +768,8 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 						if($kind==12) $cnt=$row['loc']/50;
 						if($kind==13) $cnt=$row['loc']/4;
 					
-						$script=" onmouseover='console.log(\"".$i.";".$row['ar'].";".$row['loc'].";".$row['program'].";\")'";
+						$script="";
+//						$script=" onmouseover='console.log(\"".$i.";".$row['ar'].";".$row['loc'].";".$row['program'].";\")'";
 					
 						if($cnt>98) $cnt=98;
 						
@@ -1250,7 +1262,7 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 		
 		go();
 	
-		echo "<script>";
+		echo "\n\n<script>";
 	
 		echo "download('image".$kind.".svg',\"";
 		echo $finalstr;
