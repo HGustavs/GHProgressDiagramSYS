@@ -31,7 +31,7 @@ $process="ALL"; // ALL, ISSUES, GIT, BLAME, FIX, STUDENTS
 $dbFile="GHdata.db";
 $newGitCommitFile="data_commits.js";
 $newIssueFile="data_issues.js";
-$gittags=array(2014=>"v0.4",2015=>"v0.7",2016=>"v0.85",2017=>"v0.95",2018=>"v0.105");
+$gittags=array(2014=>"v0.4",2015=>"v0.7",2016=>"v0.85",2017=>"v0.95",2018=>"v0.106b");
 $oldcommitsfiles=array("data_commits_Old.js");
 
 if (!file_exists(BASE_FOLDER)) {
