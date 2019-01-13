@@ -1,6 +1,10 @@
 <html>
 	<head>
 		<title>PHP Test</title>
+		
+		<script>
+		
+		</script>
 	</head>
 
 <body>
@@ -32,6 +36,8 @@
 		$issuecolordd="fill:#26b";
 		$othercolordd="fill:#2b6";
 */
+		$finalstr="Hello!";
+		
 		$leadcolor="fill:#f8b";
 		$issuecolor="fill:#59d";
 		$othercolor="fill:#bfe";
@@ -172,6 +178,11 @@
 				}else{
 						echo "<option value='12'>Lines of Code P Year Diagram</option>";
 				}	
+				if($_POST['diagram']==13){
+						echo "<option value='13' selected='selected'>Commits P Year Diagram</option>";
+				}else{
+						echo "<option value='13'>Commits P Year Diagram</option>";
+				}		
 		echo "</select>";
 
 		echo "<select name='kind' onchange='this.form.submit()'>";
@@ -242,7 +253,7 @@ function go(){
 				diagram_itemized($kind);
 		}else if($kind>=11&&$kind<12){
 				diagram_loc($kind);
-		}else if($kind>=12&&$kind<13){
+		}else if($kind>=12&&$kind<14){
 				diagram_locY($kind);
 		}
 }
@@ -255,13 +266,15 @@ function go(){
 
 function makestart($svgstr)
 {
+		global $finalstr;
 		if(!$maketable){
 										echo "<svg width='800' height='1220' style='border:1px solid red;'>";
 										echo $svgstr;
 										echo "</svg>"; 
 		}else{
 				echo "</table>";
-		}						
+		}				
+		$finalstr="<svg width='800' height='1220' style='border:1px solid red;'>".$svgstr."</svg>";
 }
     
 //--------------------------------------------------------------------------
@@ -696,34 +709,24 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 			
 				$colors=array();
 				$dcolors=array();			
-				
-				$colors["2014"]="fill:#f8b";
-				$dcolors["2014"]="fill:#d59";			
 			
-				$colors["2015"]="fill:#59d";
-				$dcolors["2015"]="fill:#47b";			
-
-				$colors["2016"]="fill:#bfe";
-				$dcolors["2016"]="fill:#7fa";			
+				$colors["2014"]="fill:#f6a";
+				$dcolors["2014"]="fill:#d48";			
 			
-				$colors["2017"]="fill:#bfe";
-				$dcolors["2017"]="fill:#7fa";			
+				$colors["2015"]="fill:#af6";
+				$dcolors["2015"]="fill:#8d4";			
 
-				$colors["2018"]="fill:#bfe";
-				$dcolors["2018"]="fill:#7fa";			
+				$colors["2016"]="fill:#6af";
+				$dcolors["2016"]="fill:#48d";			
+			
+				$colors["2017"]="fill:#fa6";
+				$dcolors["2017"]="fill:#d84";			
+
+				$colors["2018"]="fill:#a6f";
+				$dcolors["2018"]="fill:#84d";			
 			
 				$svgstr=background($kind,$graphHeight,$graphWidth,$graphSpacer);
 
-				$kind=6;
-				$dvpcolor=$colorarr[$kind][1];
-				$webcolor=$colorarr[$kind][2];
-
-				$dvpcolord=$colordarr[$kind][4];
-				$webcolord=$colordarr[$kind][5];
-
-				$dvpcolordd=$colordarr[$kind][4];
-				$webcolordd=$colordarr[$kind][5];
-			
 				$dvpcol="fill:#f88";
 				$webcol="fill:#88f";
 				$dvpcold="fill:#d44";
@@ -732,31 +735,15 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 				$dvpcol="fill:#fff";
 				$webcol="fill:#ccc";
 			
-				$query='select sum(rowcnt) as loc,stud.author,stud.ar,stud.program from Blame,stud where Blame.courseyear=stud.ar and blame.blameuser=stud.author group by stud.author order by loc desc;';
+				if($kind==12){
+						$query='select sum(rowcnt) as loc,stud.author,stud.ar,stud.program from Blame,stud where Blame.courseyear=stud.ar and blame.blameuser=stud.author group by stud.author order by loc desc;';
+				}else{
+						$query='select count(*) as loc,ar,program,stud.author from stud,commitgit where stud.author=commitgit.author and (program="WEBUG" or program="DVSUG") and ar>2013 group by stud.author order by loc desc;';
+				}
+			
+			
 				$result = $log_db->query($query);
 				$rows = $result->fetchAll();
-
-				$i=0;
-				$yk=$topoffs-36;
-				$yk+=$graphSpacer;			
-				foreach($rows as $row){
-						// Do not reset iterator - color dependent on year
-						$cnt=$row['loc']/50;
-						if($cnt>98) $cnt=98;
-						$cnt+=14;
-
-						if($row['program']=="DVSUG"){
-								$fillst=$dvpcol;				
-								$fillstd=$dvpcold;				
-						}else if($row['program']=="WEBUG"){
-								$fillst=$webcol;				
-								$fillstd=$webcold;				
-						}			
-					
-						$svgstr.="<rect x='".($leftoffs+($i*8))."' y='".($yk-$cnt)."' width='8' height='".($cnt)."' style='".$fillst."' />";
-
-						$i++;
-				}
 
 				$i=0;
 				$yk=$topoffs-36;
@@ -767,13 +754,16 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 						$fillst=$colors[$row['ar']];				
 						$fillstd=$dcolors[$row['ar']];
 						
-						$cnt=$row['loc']/50;
+						if($kind==12) $cnt=$row['loc']/50;
+						if($kind==13) $cnt=$row['loc']/4;
+					
+						$script=" onmouseover='console.log(\"".$i.";".$row['ar'].";".$row['loc'].";".$row['program'].";\")'";
 					
 						if($cnt>98) $cnt=98;
 						
 						// stroke-width:3;stroke:rgb(0,0,0)
 						$svgstr.="<rect x='".($leftoffs+($i*8))."' y='".($yk-$cnt-2)."' width='10' height='".($cnt)."' style='".$fillstd."' />";
-						$svgstr.="<rect x='".($leftoffs+($i*8))."' y='".($yk-$cnt)."' width='8' height='".($cnt)."' style='".$fillst."' />";
+						$svgstr.="<rect x='".($leftoffs+($i*8))."' y='".($yk-$cnt)."' width='8' height='".($cnt)."' style='".$fillst."' ".$script." />";
 					
 						// Iterate to next category
 						$i++;
@@ -1259,6 +1249,13 @@ function postground($kind,$graphHeight,$graphWidth,$graphSpacer)
 		}
 		
 		go();
+	
+		echo "<script>";
+	
+		echo "download('image".$kind.".svg',\"";
+		echo $finalstr;
+		echo "\");";
+		echo "</script>"
 	
 ?> 
 
